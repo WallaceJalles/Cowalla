@@ -6,74 +6,94 @@
     <title>Cowalla - Music Charts</title>
     <style>
         :root {
-            --verde-creme: #f0f4ed;
-            --verde-militar: #4b5320;
-            --verde-suave: #d1e0d7;
+            --verde-creme: #f5f5dc; /* Fundo creme esverdeado */
+            --verde-militar: #4b5320; /* Tom militar para textos e logo */
+            --verde-suave: #d1e0d7; /* Balão de info e hover */
             --branco: #ffffff;
         }
 
         body {
             background-color: var(--verde-creme);
             color: var(--verde-militar);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
         }
 
         header {
-            width: 100%; padding: 20px 0; text-align: center;
+            width: 100%; padding: 30px 0; text-align: center;
             position: sticky; top: 0; background: var(--verde-creme); z-index: 100;
         }
 
         .logo-cw {
             background-color: var(--verde-militar);
-            color: var(--verde-suave);
-            width: 60px; height: 60px;
+            color: var(--verde-creme);
+            width: 70px; height: 70px;
             display: inline-flex; align-items: center; justify-content: center;
-            border-radius: 12px; font-weight: bold; font-size: 24px;
-            cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 18px; font-weight: 900; font-size: 28px;
+            cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
+        .logo-cw:hover { transform: scale(1.1); }
 
-        .controls { margin: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        .controls { margin: 15px; display: flex; gap: 12px; align-items: center; }
         
         select, button {
-            background: var(--branco); border: 1px solid var(--verde-militar);
-            color: var(--verde-militar); padding: 8px 12px; border-radius: 5px; cursor: pointer;
+            background: var(--branco); border: 2px solid var(--verde-militar);
+            color: var(--verde-militar); padding: 8px 15px; border-radius: 10px; 
+            font-weight: bold; cursor: pointer; transition: 0.2s;
         }
-
+        button:hover:not(:disabled) { background: var(--verde-suave); }
         button:disabled { opacity: 0.3; cursor: not-allowed; }
 
+        #weekDisplay { margin-bottom: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+
         .chart-container {
-            width: 95%; max-width: 800px; background: var(--branco);
-            border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 50px;
+            width: 95%; max-width: 750px; background: var(--branco);
+            border-radius: 15px; overflow: hidden; margin-bottom: 80px;
+            box-shadow: 0 6px 20px rgba(75, 83, 32, 0.15);
         }
 
         .chart-row {
-            display: grid; grid-template-columns: 40px 50px 1fr 80px;
-            align-items: center; padding: 10px; border-bottom: 1px solid var(--verde-creme);
-            transition: background 0.2s; cursor: pointer;
+            display: grid; grid-template-columns: 50px 60px 1fr 100px;
+            align-items: center; padding: 14px; border-bottom: 1px solid var(--verde-creme);
+            cursor: pointer; transition: 0.2s;
+        }
+        .chart-row:hover { background-color: var(--verde-suave); }
+
+        .rank { font-weight: 900; text-align: center; font-size: 1.2rem; }
+        
+        .artwork { 
+            width: 55px; height: 55px; border-radius: 8px; 
+            object-fit: cover; background: #eee;
         }
 
-        .chart-row:hover { background-color: var(--verde-suave); }
-        .rank { font-weight: bold; text-align: center; }
-        .artwork { width: 45px; height: 45px; border-radius: 4px; object-fit: cover; background: #eee; }
-        .info { padding-left: 15px; overflow: hidden; }
-        .track-name { font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .artist-name { font-size: 0.85rem; opacity: 0.8; }
-        .stats { text-align: right; font-size: 0.8rem; font-weight: bold; }
+        .info { padding: 0 15px; overflow: hidden; }
+        .track-name { font-weight: 700; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist-name { font-size: 0.9rem; opacity: 0.8; }
+
+        .stats { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+        .variation { font-size: 0.75rem; font-weight: 900; margin-bottom: 3px; }
+        .playcount { font-size: 0.85rem; font-weight: 600; opacity: 0.7; }
+
+        /* Cores de Status */
+        .up { color: #2e7d32; } /* Verde para subida */
+        .down { color: #d32f2f; } /* Vermelho para descida */
+        .stable { color: #757575; } /* Cinza para estável */
+        .new { color: var(--verde-militar); font-style: italic; background: #e8f5e9; padding: 1px 4px; border-radius: 3px; }
 
         /* Modal / Balão */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999;
+        }
         .modal {
             display: none; position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%); background: var(--verde-suave);
-            border: 2px solid var(--verde-militar); padding: 25px;
-            border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000;
-            width: 80%; max-width: 300px; text-align: center;
-        }
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 999;
+            border: 3px solid var(--verde-militar); padding: 30px;
+            border-radius: 25px; z-index: 1000; width: 85%; max-width: 320px;
+            text-align: center; color: var(--verde-militar);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -84,104 +104,120 @@
     </header>
 
     <div class="controls">
-        <button id="prevWeek">← Anterior</button>
+        <button id="prevWeek">← ANTERIOR</button>
         <select id="chartType">
-            <option value="50">Top 50</option>
-            <option value="100">Top 100</option>
+            <option value="50">TOP 50</option>
+            <option value="100">TOP 100</option>
         </select>
-        <button id="nextWeek">Próxima →</button>
+        <button id="nextWeek">PRÓXIMA →</button>
     </div>
 
-    <div id="weekDisplay" style="margin-bottom: 10px; font-weight: bold;">Carregando...</div>
+    <div id="weekDisplay">SINCRONIZANDO...</div>
 
     <div class="chart-container" id="chartBody"></div>
 
     <div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
     <div id="infoModal" class="modal">
         <h3 id="modalTitle" style="margin-top: 0;"></h3>
-        <p id="modalDetail"></p>
-        <button onclick="closeModal()" style="width: 100%;">Fechar</button>
+        <div id="modalDetail"></div>
+        <button onclick="closeModal()" style="width: 100%; margin-top: 20px; background: var(--verde-militar); color: white;">FECHAR</button>
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO ---
-        const USER = 'wallacejalles'; 
-        const API_KEY = '93572b237925e14bc08a3b338cb8d6c4'; // <--- INSIRA SUA CHAVE AQUI
-        
+        const USER = 'wallacejalles';
+        const API_KEY = '93572b237925e14bc08a3b338cb8d6c4';
+
         let currentWeekIndex = 0;
         let weeklyChartList = [];
 
-        // Inicia a aplicação
         async function init() {
             try {
-                const url = `https://ws.audioscrobbler.com/2.0/?method=user.getweeklychartlist&user=${USER}&api_key=${API_KEY}&format=json`;
-                const resp = await fetch(url);
+                const resp = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getweeklychartlist&user=${USER}&api_key=${API_KEY}&format=json`);
                 const data = await resp.json();
-                
-                // Lista de todas as semanas (da mais nova para a mais antiga)
+                // O Last.fm já entrega as semanas de sexta a quinta
                 weeklyChartList = data.weeklychartlist.chart.reverse();
                 updateChart();
-            } catch (e) {
-                document.getElementById('weekDisplay').innerText = "Erro ao carregar dados.";
-            }
+            } catch (e) { document.getElementById('weekDisplay').innerText = "ERRO AO CARREGAR"; }
         }
 
         async function updateChart() {
             const week = weeklyChartList[currentWeekIndex];
+            const prevWeek = weeklyChartList[currentWeekIndex + 1];
             const limit = document.getElementById('chartType').value;
             
-            // Formatar data para exibição
-            const dateFrom = new Date(week.from * 1000).toLocaleDateString();
-            const dateTo = new Date(week.to * 1000).toLocaleDateString();
+            const dateFrom = new Date(week.from * 1000).toLocaleDateString('pt-BR');
+            const dateTo = new Date(week.to * 1000).toLocaleDateString('pt-BR');
             document.getElementById('weekDisplay').innerText = `${dateFrom} - ${dateTo}`;
 
-            const url = `https://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=${USER}&api_key=${API_KEY}&from=${week.from}&to=${week.to}&limit=${limit}&format=json`;
-            
-            const resp = await fetch(url);
+            // Chart atual
+            const resp = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=${USER}&api_key=${API_KEY}&from=${week.from}&to=${week.to}&limit=${limit}&format=json`);
             const data = await resp.json();
-            renderTracks(data.weeklytrackchart.track);
+            const currentTracks = Array.isArray(data.weeklytrackchart.track) ? data.weeklytrackchart.track : [data.weeklytrackchart.track];
+
+            // Mapa da semana anterior para comparação
+            let prevTracksMap = new Map();
+            if (prevWeek) {
+                const respPrev = await fetch(`https://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=${USER}&api_key=${API_KEY}&from=${prevWeek.from}&to=${prevWeek.to}&format=json`);
+                const dataPrev = await respPrev.json();
+                const pTracks = Array.isArray(dataPrev.weeklytrackchart.track) ? dataPrev.weeklytrackchart.track : [dataPrev.weeklytrackchart.track];
+                pTracks.forEach((t, i) => prevTracksMap.set(`${t.artist['#text']} - ${t.name}`, i + 1));
+            }
+
+            renderTracks(currentTracks, prevTracksMap);
             
-            // Controle dos botões
             document.getElementById('nextWeek').disabled = (currentWeekIndex === 0);
             document.getElementById('prevWeek').disabled = (currentWeekIndex === weeklyChartList.length - 1);
         }
 
-        function renderTracks(tracks) {
+        function renderTracks(tracks, prevMap) {
             const container = document.getElementById('chartBody');
             container.innerHTML = '';
 
-            // Caso o Last.fm retorne um objeto único em vez de array (quando só tem 1 scrobble)
-            const trackList = Array.isArray(tracks) ? tracks : [tracks];
+            tracks.forEach((track, index) => {
+                const rank = index + 1;
+                const trackId = `${track.artist['#text']} - ${track.name}`;
+                const lastRank = prevMap.get(trackId);
+                
+                let statusHTML = '';
+                if (!lastRank) {
+                    statusHTML = '<span class="variation new">NEW</span>';
+                } else if (lastRank > rank) {
+                    statusHTML = `<span class="variation up">▲ ${lastRank - rank}</span>`;
+                } else if (lastRank < rank) {
+                    statusHTML = `<span class="variation down">▼ ${rank - lastRank}</span>`;
+                } else {
+                    statusHTML = '<span class="variation stable">=</span>';
+                }
 
-            trackList.forEach((track, index) => {
+                const imgSrc = track.image[2]['#text'] || 'https://via.placeholder.com/100?text=No+Cover';
+
                 const row = document.createElement('div');
                 row.className = 'chart-row';
-                row.onclick = () => showInfo(track);
-                
-                // Imagem (usa a de tamanho médio)
-                const img = track.image ? track.image[1]['#text'] : '';
-
+                row.onclick = () => showInfo(track, statusHTML);
                 row.innerHTML = `
-                    <div class="rank">${index + 1}</div>
-                    <img src="${img || 'https://via.placeholder.com/50'}" class="artwork">
+                    <div class="rank">${rank}</div>
+                    <img src="${imgSrc}" class="artwork">
                     <div class="info">
                         <span class="track-name">${track.name}</span>
                         <span class="artist-name">${track.artist['#text']}</span>
                     </div>
                     <div class="stats">
-                        ${track.playcount} <small>plays</small>
+                        ${statusHTML}
+                        <span class="playcount">${track.playcount} plays</span>
                     </div>
                 `;
                 container.appendChild(row);
             });
         }
 
-        function showInfo(track) {
+        function showInfo(track, status) {
             document.getElementById('modalTitle').innerText = track.name;
             document.getElementById('modalDetail').innerHTML = `
-                <strong>Artista:</strong> ${track.artist['#text']}<br><br>
-                <strong>Plays na semana:</strong> ${track.playcount}<br>
-                <small>As informações de Peak e Debut serão calculadas assim que o banco de dados for conectado.</small>
+                <p><strong>Artista:</strong> ${track.artist['#text']}</p>
+                <p><strong>Desempenho:</strong> ${status}</p>
+                <p><strong>Streams na Semana:</strong> ${track.playcount}</p>
+                <hr style="border: 0; border-top: 1px solid var(--verde-militar); opacity: 0.2;">
+                <p style="font-size: 0.8rem;">Vincule seu Last.fm para ver o histórico completo de peaks!</p>
             `;
             document.getElementById('infoModal').style.display = 'block';
             document.getElementById('overlay').style.display = 'block';
@@ -192,9 +228,8 @@
             document.getElementById('overlay').style.display = 'none';
         }
 
-        // Eventos dos botões
-        document.getElementById('prevWeek').onclick = () => { currentWeekIndex++; updateChart(); };
-        document.getElementById('nextWeek').onclick = () => { currentWeekIndex--; updateChart(); };
+        document.getElementById('prevWeek').onclick = () => { currentWeekIndex++; updateChart(); window.scrollTo(0,0); };
+        document.getElementById('nextWeek').onclick = () => { currentWeekIndex--; updateChart(); window.scrollTo(0,0); };
         document.getElementById('chartType').onchange = () => { updateChart(); };
 
         init();

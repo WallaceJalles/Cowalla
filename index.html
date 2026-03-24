@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cowalla - Music Charts</title>
+    <style>
+        :root {
+            --verde-creme: #f0f4ed;
+            --verde-militar: #4b5320;
+            --verde-suave: #d1e0d7;
+            --branco: #ffffff;
+        }
+
+        body {
+            background-color: var(--verde-creme);
+            color: var(--verde-militar);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header & Logo */
+        header {
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            background: var(--verde-creme);
+            z-index: 100;
+        }
+
+        .logo-cw {
+            background-color: var(--verde-militar);
+            color: var(--verde-suave);
+            width: 60px;
+            height: 60px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Filtros */
+        .controls {
+            margin: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        select, button {
+            background: var(--branco);
+            border: 1px solid var(--verde-militar);
+            color: var(--verde-militar);
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Chart Table */
+        .chart-container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--branco);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 50px 60px 1fr 100px;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--verde-creme);
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .chart-row:hover {
+            background-color: var(--verde-suave);
+        }
+
+        .rank { font-weight: bold; font-size: 1.2rem; }
+        
+        .artwork {
+            width: 45px;
+            height: 45px;
+            border-radius: 4px;
+            background: #ccc;
+            object-fit: cover;
+        }
+
+        .info {
+            padding-left: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .track-name { font-weight: 600; font-size: 1rem; }
+        .artist-name { font-size: 0.85rem; opacity: 0.8; }
+
+        .stats { text-align: right; font-size: 0.9rem; }
+
+        /* Balão/Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--verde-suave);
+            border: 2px solid var(--verde-militar);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-cw" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">CW</div>
+    </header>
+
+    <div class="controls">
+        <select id="chartType">
+            <option value="50">Top 50</option>
+            <option value="100">Top 100</option>
+        </select>
+        <button id="prevWeek">← Semana Anterior</button>
+        <button id="nextWeek">Próxima Semana →</button>
+    </div>
+
+    <div class="chart-container" id="chartBody">
+        <div style="padding: 20px; text-align: center;">Carregando charts de wallacejalles...</div>
+    </div>
+
+    <div id="infoModal" class="modal" onclick="this.style.display='none'">
+        <h3 id="modalTitle">Nome da Música</h3>
+        <p id="modalDetail">Detalhes aqui...</p>
+    </div>
+
+    <script>
+        // Configurações Iniciais
+        const USER = 'wallacejalles';
+        const API_KEY = 'SUA_API_KEY_AQUI'; // Você precisará criar uma no site do Last.fm
+
+        // Lógica de alternância Top 50/100
+        document.getElementById('chartType').addEventListener('change', (e) => {
+            console.log("Mudando para Top " + e.target.value);
+            // Aqui chamaria a função de renderizar novamente
+        });
+
+        // Simulação de preenchimento
+        function renderDummyChart() {
+            const container = document.getElementById('chartBody');
+            container.innerHTML = '';
+            for(let i=1; i<=10; i++) {
+                container.innerHTML += `
+                    <div class="chart-row" onclick="showInfo('${i}')">
+                        <div class="rank">${i}</div>
+                        <img src="https://via.placeholder.com/50" class="artwork">
+                        <div class="info">
+                            <span class="track-name">Música Exemplo ${i}</span>
+                            <span class="artist-name">Artista Exemplo</span>
+                        </div>
+                        <div class="stats">
+                            <span style="color: green;">+2</span> | PK: #1
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function showInfo(rank) {
+            const modal = document.getElementById('infoModal');
+            document.getElementById('modalTitle').innerText = "Música #" + rank;
+            document.getElementById('modalDetail').innerText = "Semanas no chart: 5\nDebut: 12/01/2026\nTotal Streams: 450";
+            modal.style.display = 'block';
+        }
+
+        renderDummyChart();
+    </script>
+</body>
+</html>

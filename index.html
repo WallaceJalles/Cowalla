@@ -16,114 +16,64 @@
             background-color: var(--verde-creme);
             color: var(--verde-militar);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Header & Logo */
         header {
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            background: var(--verde-creme);
-            z-index: 100;
+            width: 100%; padding: 20px 0; text-align: center;
+            position: sticky; top: 0; background: var(--verde-creme); z-index: 100;
         }
 
         .logo-cw {
             background-color: var(--verde-militar);
             color: var(--verde-suave);
-            width: 60px;
-            height: 60px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 60px; height: 60px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 12px; font-weight: bold; font-size: 24px;
+            cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        /* Filtros */
-        .controls {
-            margin: 20px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
+        .controls { margin: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        
         select, button {
-            background: var(--branco);
-            border: 1px solid var(--verde-militar);
-            color: var(--verde-militar);
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
+            background: var(--branco); border: 1px solid var(--verde-militar);
+            color: var(--verde-militar); padding: 8px 12px; border-radius: 5px; cursor: pointer;
         }
 
-        /* Chart Table */
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
+
         .chart-container {
-            width: 90%;
-            max-width: 800px;
-            background: var(--branco);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            width: 95%; max-width: 800px; background: var(--branco);
+            border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 50px;
         }
 
         .chart-row {
-            display: grid;
-            grid-template-columns: 50px 60px 1fr 100px;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid var(--verde-creme);
-            transition: background 0.2s;
-            cursor: pointer;
+            display: grid; grid-template-columns: 40px 50px 1fr 80px;
+            align-items: center; padding: 10px; border-bottom: 1px solid var(--verde-creme);
+            transition: background 0.2s; cursor: pointer;
         }
 
-        .chart-row:hover {
-            background-color: var(--verde-suave);
-        }
-
-        .rank { font-weight: bold; font-size: 1.2rem; }
-        
-        .artwork {
-            width: 45px;
-            height: 45px;
-            border-radius: 4px;
-            background: #ccc;
-            object-fit: cover;
-        }
-
-        .info {
-            padding-left: 15px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .track-name { font-weight: 600; font-size: 1rem; }
+        .chart-row:hover { background-color: var(--verde-suave); }
+        .rank { font-weight: bold; text-align: center; }
+        .artwork { width: 45px; height: 45px; border-radius: 4px; object-fit: cover; background: #eee; }
+        .info { padding-left: 15px; overflow: hidden; }
+        .track-name { font-weight: 600; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .artist-name { font-size: 0.85rem; opacity: 0.8; }
+        .stats { text-align: right; font-size: 0.8rem; font-weight: bold; }
 
-        .stats { text-align: right; font-size: 0.9rem; }
-
-        /* Balão/Modal */
+        /* Modal / Balão */
         .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--verde-suave);
-            border: 2px solid var(--verde-militar);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            z-index: 1000;
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); background: var(--verde-suave);
+            border: 2px solid var(--verde-militar); padding: 25px;
+            border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 1000;
+            width: 80%; max-width: 300px; text-align: center;
+        }
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.2); z-index: 999;
         }
     </style>
 </head>
@@ -134,63 +84,120 @@
     </header>
 
     <div class="controls">
+        <button id="prevWeek">← Anterior</button>
         <select id="chartType">
             <option value="50">Top 50</option>
             <option value="100">Top 100</option>
         </select>
-        <button id="prevWeek">← Semana Anterior</button>
-        <button id="nextWeek">Próxima Semana →</button>
+        <button id="nextWeek">Próxima →</button>
     </div>
 
-    <div class="chart-container" id="chartBody">
-        <div style="padding: 20px; text-align: center;">Carregando charts de wallacejalles...</div>
-    </div>
+    <div id="weekDisplay" style="margin-bottom: 10px; font-weight: bold;">Carregando...</div>
 
-    <div id="infoModal" class="modal" onclick="this.style.display='none'">
-        <h3 id="modalTitle">Nome da Música</h3>
-        <p id="modalDetail">Detalhes aqui...</p>
+    <div class="chart-container" id="chartBody"></div>
+
+    <div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+    <div id="infoModal" class="modal">
+        <h3 id="modalTitle" style="margin-top: 0;"></h3>
+        <p id="modalDetail"></p>
+        <button onclick="closeModal()" style="width: 100%;">Fechar</button>
     </div>
 
     <script>
-        // Configurações Iniciais
-        const USER = 'wallacejalles';
-        const API_KEY = 'SUA_API_KEY_AQUI'; // Você precisará criar uma no site do Last.fm
+        // --- CONFIGURAÇÃO ---
+        const USER = 'wallacejalles'; 
+        const API_KEY = 93572b237925e14bc08a3b338cb8d6c4; // <--- INSIRA SUA CHAVE AQUI
+        
+        let currentWeekIndex = 0;
+        let weeklyChartList = [];
 
-        // Lógica de alternância Top 50/100
-        document.getElementById('chartType').addEventListener('change', (e) => {
-            console.log("Mudando para Top " + e.target.value);
-            // Aqui chamaria a função de renderizar novamente
-        });
-
-        // Simulação de preenchimento
-        function renderDummyChart() {
-            const container = document.getElementById('chartBody');
-            container.innerHTML = '';
-            for(let i=1; i<=10; i++) {
-                container.innerHTML += `
-                    <div class="chart-row" onclick="showInfo('${i}')">
-                        <div class="rank">${i}</div>
-                        <img src="https://via.placeholder.com/50" class="artwork">
-                        <div class="info">
-                            <span class="track-name">Música Exemplo ${i}</span>
-                            <span class="artist-name">Artista Exemplo</span>
-                        </div>
-                        <div class="stats">
-                            <span style="color: green;">+2</span> | PK: #1
-                        </div>
-                    </div>
-                `;
+        // Inicia a aplicação
+        async function init() {
+            try {
+                const url = `https://ws.audioscrobbler.com/2.0/?method=user.getweeklychartlist&user=${USER}&api_key=${API_KEY}&format=json`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+                
+                // Lista de todas as semanas (da mais nova para a mais antiga)
+                weeklyChartList = data.weeklychartlist.chart.reverse();
+                updateChart();
+            } catch (e) {
+                document.getElementById('weekDisplay').innerText = "Erro ao carregar dados.";
             }
         }
 
-        function showInfo(rank) {
-            const modal = document.getElementById('infoModal');
-            document.getElementById('modalTitle').innerText = "Música #" + rank;
-            document.getElementById('modalDetail').innerText = "Semanas no chart: 5\nDebut: 12/01/2026\nTotal Streams: 450";
-            modal.style.display = 'block';
+        async function updateChart() {
+            const week = weeklyChartList[currentWeekIndex];
+            const limit = document.getElementById('chartType').value;
+            
+            // Formatar data para exibição
+            const dateFrom = new Date(week.from * 1000).toLocaleDateString();
+            const dateTo = new Date(week.to * 1000).toLocaleDateString();
+            document.getElementById('weekDisplay').innerText = `${dateFrom} - ${dateTo}`;
+
+            const url = `https://ws.audioscrobbler.com/2.0/?method=user.getweeklytrackchart&user=${USER}&api_key=${API_KEY}&from=${week.from}&to=${week.to}&limit=${limit}&format=json`;
+            
+            const resp = await fetch(url);
+            const data = await resp.json();
+            renderTracks(data.weeklytrackchart.track);
+            
+            // Controle dos botões
+            document.getElementById('nextWeek').disabled = (currentWeekIndex === 0);
+            document.getElementById('prevWeek').disabled = (currentWeekIndex === weeklyChartList.length - 1);
         }
 
-        renderDummyChart();
+        function renderTracks(tracks) {
+            const container = document.getElementById('chartBody');
+            container.innerHTML = '';
+
+            // Caso o Last.fm retorne um objeto único em vez de array (quando só tem 1 scrobble)
+            const trackList = Array.isArray(tracks) ? tracks : [tracks];
+
+            trackList.forEach((track, index) => {
+                const row = document.createElement('div');
+                row.className = 'chart-row';
+                row.onclick = () => showInfo(track);
+                
+                // Imagem (usa a de tamanho médio)
+                const img = track.image ? track.image[1]['#text'] : '';
+
+                row.innerHTML = `
+                    <div class="rank">${index + 1}</div>
+                    <img src="${img || 'https://via.placeholder.com/50'}" class="artwork">
+                    <div class="info">
+                        <span class="track-name">${track.name}</span>
+                        <span class="artist-name">${track.artist['#text']}</span>
+                    </div>
+                    <div class="stats">
+                        ${track.playcount} <small>plays</small>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function showInfo(track) {
+            document.getElementById('modalTitle').innerText = track.name;
+            document.getElementById('modalDetail').innerHTML = `
+                <strong>Artista:</strong> ${track.artist['#text']}<br><br>
+                <strong>Plays na semana:</strong> ${track.playcount}<br>
+                <small>As informações de Peak e Debut serão calculadas assim que o banco de dados for conectado.</small>
+            `;
+            document.getElementById('infoModal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Eventos dos botões
+        document.getElementById('prevWeek').onclick = () => { currentWeekIndex++; updateChart(); };
+        document.getElementById('nextWeek').onclick = () => { currentWeekIndex--; updateChart(); };
+        document.getElementById('chartType').onchange = () => { updateChart(); };
+
+        init();
     </script>
 </body>
 </html>
